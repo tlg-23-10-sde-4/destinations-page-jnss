@@ -27,6 +27,8 @@ cards_container.addEventListener("click", (e) => {
 
   if (clickedElt.getAttribute("btn_type") === "delete") {
     clickedElt.parentElement.parentElement.remove();
+  } else if (clickedElt.getAttribute("btn_type") === "edit") {
+    handleEdit(clickedElt);
   }
 });
 
@@ -46,4 +48,46 @@ function createCard({ destinationName, locationName, photoUrl, descr }) {
   `;
 
   return card;
+}
+
+function handleEdit(editBtn) {
+  const cardBody = editBtn.parentElement;
+  const oldDestName = cardBody.children[0].textContent;
+  const oldLocName = cardBody.children[1].textContent;
+  const oldPhotoUrl = cardBody.previousElementSibling.getAttribute("src");
+
+  const oldDesc =
+    cardBody.children[2].tagName === "P"
+      ? cardBody.children[2].textContent
+      : "";
+
+  const newDestName = prompt("Enter new destination name", oldDestName);
+  const newLocName = prompt("Enter new destination name", oldLocName);
+  const newPhotoUrl = prompt("Enter new destination name", oldPhotoUrl);
+  const newDesc = prompt("Enter new destination name", oldDesc);
+
+  if (newDestName && newDestName.trim() !== oldDestName) {
+    cardBody.children[0].textContent = newDestName;
+  }
+
+  if (newLocName && newLocName.trim() !== oldLocName) {
+    cardBody.children[1].textContent = newLocName;
+  }
+
+  if (newPhotoUrl && newPhotoUrl.trim() !== oldPhotoUrl) {
+    cardBody.previousElementSibling.setAttribute("src", newPhotoUrl);
+  }
+
+  if (newDesc) {
+    if (oldDesc && newDesc.trim() !== oldDesc) {
+      // the card already had a description
+      cardBody.children[2].textContent = newDesc;
+    } else if (oldDesc === "") {
+      // the card didn't have a description paragraph already
+      // need to create a new descriptiong paragraph and put it on the card
+      const newDescrElt = document.createElement("p");
+      newDescrElt.textContent = newDesc;
+      cardBody.insertBefore(newDescrElt, editBtn);
+    }
+  }
 }
